@@ -134,37 +134,17 @@ local function hide()
 end
 
 local function MakeLoop(toggle, func)
-    local running = false
-    local loopThread
-
-    local function StartLoop()
-        if running then return end
-        running = true
-        loopThread = task.spawn(function()
-            while running and toggle.Value do
+    task.spawn(function()
+        while true do
+            task.wait(0.5)
+            if toggle and toggle.Value then
                 pcall(func)
-                task.wait(0.5)
             end
-        end)
-    end
-
-    local function StopLoop()
-        running = false
-    end
-
-    toggle.Changed:Connect(function()
-        if toggle.Value then
-            StartLoop()
-        else
-            StopLoop()
         end
     end)
-
-    if toggle.Value then
-        StartLoop()
-    end
 end
 
+-- UI setup
 local Window = ReGui:Window({
     Title = "Syntix | Grow A Garden",
     Theme = "GardenTheme",
@@ -187,9 +167,9 @@ local HarvestNode = Window:TreeNode({ Title = "Auto-Harvest 🌾" })
 ToggleHarvest = HarvestNode:Checkbox({ Label = "🌾 Auto Harvest", Value = false })
 HarvestNode:Button({ Text = "🌾 Harvest Now", Callback = HarvestAll })
 
-local SellNode = Window:TreeNode({ Title = "Auto-Sell 💰" })
-ToggleSell = SellNode:Checkbox({ Label = "💰 Auto Sell", Value = false })
-SellNode:Button({ Text = "💸 Sell Inventory", Callback = SellInventory })
+local SellingNode = Window:TreeNode({ Title = "Auto-Sell 💰" })
+ToggleSell = SellingNode:Checkbox({ Label = "💰 Auto Sell", Value = false })
+SellingNode:Button({ Text = "💸 Sell Inventory", Callback = SellInventory })
 
 local ShopNode = Window:TreeNode({ Title = "Shop 🛒" })
 ShopNode:Button({ Text = "🛒 Seed Shop", Callback = SeedShop })
